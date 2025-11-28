@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Aanwezigheid</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 100%;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 1.4em;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .nav-btn {
+            padding: 15px;
+            border: none;
+            background: #ecf0f1;
+            cursor: pointer;
+            border-radius: 5px;
+            flex: 1;
+            font-weight: bold;
+        }
+        
+        .nav-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .view {
+            display: none;
+        }
+        
+        .view.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .date-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 5px;
+        }
+        
+        .date-btn {
+            padding: 10px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .selected-date {
+            flex-grow: 1;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .time-slot {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .status-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .status-option {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            font-size: 14px;
+        }
+        
+        .status-option.active {
+            border-color: currentColor;
+            font-weight: bold;
+        }
+        
+        .btn-present { color: #27ae60; }
+        .btn-location { color: #f39c12; }
+        .btn-absent { color: #e74c3c; }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .submit-btn {
+            flex: 2;
+            padding: 15px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .clear-btn {
+            flex: 1;
+            padding: 15px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Team Aanwezigheid</h1>
+            <div id="currentDate">Loading...</div>
+        </header>
+        
+        <nav class="nav">
+            <button class="nav-btn active" onclick="showView('dashboard')">Dashboard</button>
+            <button class="nav-btn" onclick="showView('register')">Registreren</button>
+        </nav>
+        
+        <div class="message" id="message"></div>
+        
+        <!-- Dashboard View -->
+        <div id="dashboard" class="view active">
+            <h2>Dashboard Overzicht</h2>
+            <p>Hier komt het team overzicht</p>
+            <button class="submit-btn" onclick="showView('register')">Nieuwe Registratie</button>
+        </div>
+        
+        <!-- Registration View -->
+        <div id="register" class="view">
+            <h2>Aanwezigheid Registreren</h2>
+            
+            <div class="form-group">
+                <label for="employeeSelect">Je Naam:</label>
+                <select id="employeeSelect">
+                    <option value="">-- Kies je naam --</option>
+                    <option value="1">Amy</option>
+                    <option value="2">Anniek</option>
+                    <option value="3">Anoesjka</option>
+                    <option value="4">Dennis</option>
+                    <option value="13">Leroy</option>
+                </select>
+            </div>
+            
+            <div class="date-nav">
+                <button class="date-btn" onclick="changeDay(-1)">←</button>
+                <div class="selected-date" id="selectedDate">...</div>
+                <button class="date-btn" onclick="changeDay(1)">→</button>
+            </div>
+            
+            <div class="form-group">
+                <label>Ochtend:</label>
+                <div class="time-slot">
+                    <div class="status-options">
+                        <button class="status-option btn-present" onclick="selectStatus('morning', 'present', this)">Op Kantoor</button>
+                        <button class="status-option btn-location" onclick="selectStatus('morning', 'location', this)">Op Locatie</button>
+                        <button class="status-option btn-absent" onclick="selectStatus('morning', 'absent', this)">Afwezig</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Middag:</label>
+                <div class="time-slot">
+                    <div class="status-options">
+                        <button class="status-option btn-present" onclick="selectStatus('afternoon', 'present', this)">Op Kantoor</button>
+                        <button class="status-option btn-location" onclick="selectStatus('afternoon', 'location', this)">Op Locatie</button>
+                        <button class="status-option btn-absent" onclick="selectStatus('afternoon', 'absent', this)">Afwezig</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="noteInput">Notitie:</label>
+                <textarea id="noteInput" rows="3" placeholder="Eventuele opmerkingen..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button class="clear-btn" onclick="clearForm()">Wissen</button>
+                <button class="submit-btn" onclick="saveRegistration()">Opslaan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simpele data
+        const employees = [
+            { id: 1, name: "Amy" },
+            { id: 2, name: "Anniek" },
+            { id: 3, name: "Anoesjka" },
+            { id: 4, name: "Dennis" },
+            { id: 13, name: "Leroy" }
+        ];
+
+        let attendanceData = {};
+        let selectedDate = new Date();
+        let selectedEmployee = null;
+        let currentStatus = { morning: null, afternoon: null };
+
+        // Initialize app
+        function initApp() {
+            updateDateDisplays();
+            loadFromStorage();
+            showMessage('App is klaar!', 'success');
+        }
+
+        function showView(viewName) {
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewName).classList.add('active');
+        }
+
+        function updateDateDisplays() {
+            // Current date
+            const now = new Date();
+            document.getElementById('currentDate').textContent = 
+                now.toLocaleDateString('nl-NL', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            
+            // Selected date
+            document.getElementById('selectedDate').textContent = 
+                selectedDate.toLocaleDateString('nl-NL', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric' 
+                });
+        }
+
+        function changeDay(direction) {
+            selectedDate.setDate(selectedDate.getDate() + direction);
+            updateDateDisplays();
+        }
+
+        function selectStatus(time, status, button) {
+            // Update UI
+            const parent = button.parentElement;
+            parent.querySelectorAll('.status-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            // Update state
+            currentStatus[time] = status;
+        }
+
+        function saveRegistration() {
+            const employeeSelect = document.getElementById('employeeSelect');
+            selectedEmployee = employeeSelect.value;
+            
+            if (!selectedEmployee) {
+                showMessage('Selecteer eerst je naam!', 'error');
+                return;
+            }
+
+            const dateStr = selectedDate.toISOString().split('T')[0];
+            const morningStatus = currentStatus.morning || 'absent';
+            const afternoonStatus = currentStatus.afternoon || 'absent';
+            const note = document.getElementById('noteInput').value;
+
+            // Save data
+            if (!attendanceData[dateStr]) {
+                attendanceData[dateStr] = {};
+            }
+            
+            attendanceData[dateStr][selectedEmployee] = {
+                morning: morningStatus,
+                afternoon: afternoonStatus,
+                note: note
+            };
+
+            saveToStorage();
+            
+            const employeeName = employees.find(e => e.id == selectedEmployee).name;
+            showMessage(`Opgeslagen voor ${employeeName}!`, 'success');
+            clearForm();
+            showView('dashboard');
+        }
+
+        function clearForm() {
+            document.querySelectorAll('.status-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('noteInput').value = '';
+            currentStatus = { morning: null, afternoon: null };
+        }
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem('attendanceData');
+            if (saved) {
+                attendanceData = JSON.parse(saved);
+            }
+        }
+
+        // Start the app
+        window.onload = initApp;
+    </script>
+</body>
+</html>
